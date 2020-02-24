@@ -616,6 +616,16 @@ type:simple.Person Person{name='blue', length=18}
 
 高版本的绕过可以看这篇文章：[https://kingx.me/Restrictions-and-Bypass-of-JNDI-Manipulations-RCE.html](https://kingx.me/Restrictions-and-Bypass-of-JNDI-Manipulations-RCE.html)
 
+对于rmi，jdk的防御措施是在`jdk1.8.0_191.jdk/Contents/Home/jre/lib/rt.jar!/com/sun/jndi/rmi/registry/RegistryContext.class`增加了检查：
+
+![](https://mdpicture.oss-cn-beijing.aliyuncs.com/20200225002407.png)
+
+这里`trustURLCodebase`默认为false，如果想要正常执行`getObjectInstance`，就要让`getFactoryClassLocation`返回空。这里我们需要找一个classpath中已经存在的类来达到目的。
+
+具体可参考[[浅析JNDI注入Bypass](https://www.cnblogs.com/Welk1n/p/11066397.html)](https://www.cnblogs.com/Welk1n/p/11066397.html)。
+
+对于ldap，虽然我们不能返回codebase了，但是可以直接返回序列化数据，这就要求我们知道目标使用的库的gadget，利用难度上升了不少。
+
 #### 补丁绕过
 
 ##### 1.2.25-1.2.41
